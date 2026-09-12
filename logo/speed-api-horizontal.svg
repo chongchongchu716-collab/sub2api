@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="360" viewBox="0 0 1280 360">
+  <defs>
+    <linearGradient id="hbg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B1020"/>
+      <stop offset="100%" stop-color="#101A33"/>
+    </linearGradient>
+    <linearGradient id="iconbg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4F46E5"/>
+      <stop offset="55%" stop-color="#6366F1"/>
+      <stop offset="100%" stop-color="#06B6D4"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#818CF8"/>
+      <stop offset="100%" stop-color="#22D3EE"/>
+    </linearGradient>
+    <radialGradient id="hglow" cx="50%" cy="42%" r="60%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1280" height="360" rx="64" fill="url(#hbg)"/>
+
+  <!-- icon -->
+  <g transform="translate(72,66) scale(0.443)">
+    <rect x="16" y="16" width="480" height="480" rx="112" fill="url(#iconbg)"/>
+    <rect x="16" y="16" width="480" height="480" rx="112" fill="url(#hglow)"/>
+    <circle cx="150" cy="140" r="26" fill="#FFFFFF" fill-opacity="0.92"/>
+    <circle cx="362" cy="372" r="26" fill="#FFFFFF" fill-opacity="0.92"/>
+    <path d="M 168 158 C 260 230, 250 280, 344 352" fill="none" stroke="#FFFFFF" stroke-opacity="0.35" stroke-width="10" stroke-linecap="round" stroke-dasharray="2 26"/>
+    <path d="M 292 96 L 186 268 L 252 268 L 220 416 L 340 224 L 270 224 Z" fill="#FFFFFF"/>
+    <rect x="96" y="300" width="72" height="16" rx="8" fill="#FFFFFF" fill-opacity="0.55"/>
+    <rect x="120" y="332" width="48" height="16" rx="8" fill="#FFFFFF" fill-opacity="0.35"/>
+  </g>
+
+  <!-- wordmark -->
+  <text x="330" y="184" font-family="'SF Pro Display','Segoe UI','PingFang SC','Helvetica Neue',Arial,sans-serif" font-size="80" font-weight="700" fill="#F8FAFC" letter-spacing="1">Speed<tspan fill="url(#accent)"> API</tspan></text>
+  <text x="334" y="238" font-family="'SF Mono','JetBrains Mono',Menlo,Consolas,monospace" font-size="32" font-weight="500" fill="#94A3B8" letter-spacing="5">speed-api.men</text>
+</svg>

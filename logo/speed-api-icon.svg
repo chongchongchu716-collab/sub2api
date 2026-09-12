@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4F46E5"/>
+      <stop offset="55%" stop-color="#6366F1"/>
+      <stop offset="100%" stop-color="#06B6D4"/>
+    </linearGradient>
+    <linearGradient id="bolt" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#E0F2FE"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="42%" r="60%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="12" flood-color="#0F172A" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <!-- rounded-square badge -->
+  <rect x="16" y="16" width="480" height="480" rx="112" fill="url(#bg)"/>
+  <rect x="16" y="16" width="480" height="480" rx="112" fill="url(#glow)"/>
+  <rect x="16" y="16" width="480" height="480" rx="112" fill="none" stroke="#FFFFFF" stroke-opacity="0.18" stroke-width="3"/>
+
+  <!-- relay nodes: sub (in) -> api (out) -->
+  <circle cx="150" cy="140" r="26" fill="#FFFFFF" fill-opacity="0.92" filter="url(#soft)"/>
+  <circle cx="362" cy="372" r="26" fill="#FFFFFF" fill-opacity="0.92" filter="url(#soft)"/>
+  <!-- connecting curves hinting a relay path -->
+  <path d="M 168 158 C 260 230, 250 280, 344 352" fill="none" stroke="#FFFFFF" stroke-opacity="0.35" stroke-width="10" stroke-linecap="round" stroke-dasharray="2 26"/>
+
+  <!-- lightning bolt -->
+  <path d="M 292 96
+           L 186 268
+           L 252 268
+           L 220 416
+           L 340 224
+           L 270 224
+           Z"
+        fill="url(#bolt)" filter="url(#soft)" stroke="#FFFFFF" stroke-width="0"/>
+
+  <!-- speed lines -->
+  <rect x="96" y="300" width="72" height="16" rx="8" fill="#FFFFFF" fill-opacity="0.55"/>
+  <rect x="120" y="332" width="48" height="16" rx="8" fill="#FFFFFF" fill-opacity="0.35"/>
+</svg>
