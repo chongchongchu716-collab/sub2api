@@ -668,6 +668,20 @@ export default {
         homeContentIframeWarning: '⚠️ iframe mode note: Some websites have X-Frame-Options or CSP security policies that prevent embedding in iframes. If the page appears blank or shows an error, please verify the target website allows embedding, or consider using HTML mode to build your own content.',
         compactHome: 'Compact Home Page',
         compactHomeHint: 'Show a restrained site identity page when no custom home page content is set.',
+        homeStyle: {
+          title: 'Homepage Style',
+          hint: 'Tune the brand accent, hero copy and section visibility of the built-in homepage (both the compact page and the full landing page). Empty copy falls back to the built-in localized text.',
+          accentFrom: 'Brand Accent Start',
+          accentTo: 'Brand Accent End',
+          preview: 'Preview',
+          heroTitle: 'Hero Title',
+          heroDesc: 'Hero Description',
+          heroPlaceholder: 'Leave empty to use the built-in localized copy',
+          showProviders: 'Show "Supported Models" section',
+          showPainPoints: 'Show "Pain Points" section',
+          showComparison: 'Show "Comparison" section',
+          showTerminal: 'Show hero terminal animation'
+        },
         hideCcsImportButton: 'Hide CCS Import Button',
         hideCcsImportButtonHint: 'When enabled, the "Import to CCS" button will be hidden on the API Keys page'
       },

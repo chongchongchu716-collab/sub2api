@@ -14,6 +14,12 @@ export default {
     login: 'Login',
     getStarted: 'Get Started',
     goToDashboard: 'Go to Dashboard',
+    heroBadge: 'The AI gateway built for developers',
+    nav: {
+      features: 'Features',
+      providers: 'Models',
+      comparison: 'Comparison'
+    },
     // User-focused value proposition
     heroSubtitle: 'One Key, All AI Models',
     heroDescription: 'No need to manage multiple subscriptions. Access Claude, GPT, Gemini and more with a single API key',
@@ -60,6 +66,7 @@ export default {
     // Comparison section
     comparison: {
       title: 'Why Choose Us?',
+      badge: 'Recommended',
       headers: {
         feature: 'Comparison',
         official: 'Official Subscriptions',
@@ -99,7 +106,13 @@ export default {
       supported: 'Supported',
       soon: 'Soon',
       claude: 'Claude',
+      openai: 'OpenAI GPT',
       gemini: 'Gemini',
+      deepseek: 'DeepSeek',
+      qwen: 'Qwen',
+      grok: 'xAI Grok',
+      kimi: 'Kimi',
+      zhipu: 'Zhipu GLM',
       antigravity: 'Antigravity',
       more: 'More'
     },

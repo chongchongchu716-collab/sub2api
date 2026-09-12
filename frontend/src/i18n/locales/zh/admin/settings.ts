@@ -663,6 +663,20 @@ export default {
           '⚠️ iframe 模式提示：部分网站设置了 X-Frame-Options 或 CSP 安全策略，禁止被嵌入到 iframe 中。如果页面显示空白或报错，请确认目标网站允许被嵌入，或考虑使用 HTML 模式自行构建页面内容。',
         compactHome: '简洁首页',
         compactHomeHint: '未设置自定义首页内容时，展示简洁的站点信息页面。',
+        homeStyle: {
+          title: '首页样式',
+          hint: '调整内置首页（简洁首页与完整落地页）的品牌配色、Hero 文案与区块显示。留空文案将使用内置多语言版本。',
+          accentFrom: '品牌起始色',
+          accentTo: '品牌结束色',
+          preview: '预览',
+          heroTitle: 'Hero 标题',
+          heroDesc: 'Hero 描述',
+          heroPlaceholder: '留空则使用内置多语言文案',
+          showProviders: '显示「支持的模型」区块',
+          showPainPoints: '显示「使用痛点」区块',
+          showComparison: '显示「方案对比」区块',
+          showTerminal: '显示 Hero 终端动画'
+        },
         hideCcsImportButton: '隐藏 CCS 导入按钮',
         hideCcsImportButtonHint: '启用后将在 API Keys 页面隐藏"导入 CCS"按钮'
       },

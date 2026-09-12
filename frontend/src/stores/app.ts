@@ -6,6 +6,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { Toast, ToastType, PublicSettings } from '@/types'
+import { DEFAULT_HOME_STYLE } from '@/constants/homeStyle'
 import { i18n } from '@/i18n'
 import {
   checkUpdates as checkUpdatesAPI,
@@ -347,6 +348,7 @@ export const useAppStore = defineStore('app', () => {
         doc_url: docUrl.value,
         home_content: '',
         compact_home_enabled: false,
+        home_style: { ...DEFAULT_HOME_STYLE },
         hide_ccs_import_button: false,
         payment_enabled: false,
         table_default_page_size: 20,

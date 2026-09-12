@@ -3,9 +3,12 @@
 package admin
 
 import (
+	"encoding/json"
 	"net/http"
+	"strings"
 	"testing"
 
+	"github.com/Wei-Shaw/sub2api/internal/handler/dto"
 	"github.com/Wei-Shaw/sub2api/internal/service"
 
 	"github.com/stretchr/testify/require"
@@ -202,4 +205,57 @@ func TestUpdateSettingsSubscriptionEnabledIsWritableAndKeptWhenOmitted(t *testin
 	require.Equal(t, http.StatusOK, rec.Code)
 	require.Equal(t, "false", repo.values[service.SettingKeySubscriptionEnabled],
 		"a payload without subscription_enabled must not flip the stored value back to true")
+}
+
+// home_style is a single whole-object JSON setting. A partial object must have
+// its missing options filled from the defaults: decoding straight into a zero
+// struct would silently switch every homepage section off.
+func TestUpdateSettingsHomeStyleFillsOmittedOptionsFromDefaults(t *testing.T) {
+	h, repo := newStepUpSwitchTestHandler(t, map[string]string{
+		service.SettingKeyHomeStyle: `{"accent_from":"#112233","accent_to":"#445566","show_providers":false,"show_pain_points":true,"show_comparison":true,"show_terminal":true}`,
+	})
+
+	rec := doUpdateSettings(t, h, map[string]any{
+		"home_style": map[string]any{"accent_from": "#abcdef"},
+	}, nil)
+	require.Equal(t, http.StatusOK, rec.Code)
+
+	var stored dto.HomeStyle
+	require.NoError(t, json.Unmarshal([]byte(repo.values[service.SettingKeyHomeStyle]), &stored))
+	require.Equal(t, "#ABCDEF", stored.AccentFrom, "hex colors are canonicalized to upper case")
+	require.True(t, stored.ShowProviders, "an omitted switch falls back to the default, not false")
+	require.True(t, stored.ShowTerminal)
+}
+
+// Invalid values are sanitized rather than rejected, and omitting the key keeps
+// whatever is already stored (same omitted-means-keep rule as every other key).
+func TestUpdateSettingsHomeStyleSanitizesAndKeepsValueWhenOmitted(t *testing.T) {
+	payload := map[string]any{
+		"accent_from":      "not-a-color",
+		"accent_to":        "",
+		"hero_title":       strings.Repeat("x", 500),
+		"hero_desc":        "short",
+		"show_providers":   false,
+		"show_pain_points": true,
+		"show_comparison":  true,
+		"show_terminal":    true,
+	}
+	h, repo := newStepUpSwitchTestHandler(t, map[string]string{})
+
+	rec := doUpdateSettings(t, h, map[string]any{"home_style": payload}, nil)
+	require.Equal(t, http.StatusOK, rec.Code)
+
+	var saved dto.HomeStyle
+	require.NoError(t, json.Unmarshal([]byte(repo.values[service.SettingKeyHomeStyle]), &saved))
+	require.Equal(t, dto.DefaultHomeAccentFrom, saved.AccentFrom, "an unusable color falls back to the default")
+	require.Equal(t, dto.DefaultHomeAccentTo, saved.AccentTo)
+	require.Len(t, []rune(saved.HeroTitle), 200, "hero copy is truncated, not rejected")
+	require.False(t, saved.ShowProviders)
+
+	rec = doUpdateSettings(t, h, map[string]any{"risk_control_enabled": true}, nil)
+	require.Equal(t, http.StatusOK, rec.Code)
+
+	var afterOmission dto.HomeStyle
+	require.NoError(t, json.Unmarshal([]byte(repo.values[service.SettingKeyHomeStyle]), &afterOmission))
+	require.Equal(t, saved, afterOmission, "a payload without home_style must not clobber the stored style")
 }

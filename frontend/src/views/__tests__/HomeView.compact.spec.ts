@@ -182,3 +182,62 @@ describe('HomeView compact mode', () => {
     expect(modelPlazaDestination(wrapper)).toBeUndefined()
   })
 })
+
+describe('HomeView home_style', () => {
+  beforeEach(() => {
+    authStore.isAuthenticated = false
+    authStore.isAdmin = false
+    authStore.user = null
+    authStore.checkAuth.mockClear()
+    appStore.fetchPublicSettings.mockClear()
+    localStorage.clear()
+    vi.spyOn(window, 'matchMedia').mockReturnValue({ matches: false } as MediaQueryList)
+  })
+
+  it('applies the configured brand accent as CSS custom properties', () => {
+    const wrapper = mountHome({
+      home_style: { accent_from: '#112233', accent_to: '#445566' },
+    })
+
+    const style = wrapper.get('[data-testid="default-home"]').attributes('style') ?? ''
+    expect(style).toContain('--brand-from: #112233')
+    expect(style).toContain('--brand-to: #445566')
+    expect(style).toContain('--brand-from-rgb: 17 34 51')
+    expect(style).toContain('--brand-to-rgb: 68 85 102')
+  })
+
+  it('falls back to the shipped accent when the stored colors are unusable', () => {
+    const wrapper = mountHome({
+      home_style: { accent_from: 'not-a-color', accent_to: '' },
+    })
+
+    const style = wrapper.get('[data-testid="default-home"]').attributes('style') ?? ''
+    expect(style).toContain('--brand-from: #6366F1')
+    expect(style).toContain('--brand-to: #06B6D4')
+  })
+
+  it('lets the admin override the hero copy', () => {
+    const wrapper = mountHome({
+      home_style: { hero_title: 'Custom headline', hero_desc: 'Custom description' },
+    })
+
+    expect(wrapper.get('h1').text()).toBe('Custom headline')
+    expect(wrapper.text()).toContain('Custom description')
+  })
+
+  it('hides a section and its nav anchor when the toggle is off', () => {
+    const wrapper = mountHome({ home_style: { show_providers: false } })
+
+    expect(wrapper.find('#providers').exists()).toBe(false)
+    expect(wrapper.find('#comparison').exists()).toBe(true)
+    expect(wrapper.findAll('a[href="#providers"]')).toHaveLength(0)
+    expect(wrapper.findAll('a[href="#comparison"]')).toHaveLength(1)
+  })
+
+  it('hides the hero terminal when the toggle is off', () => {
+    expect(mountHome({}).find('.terminal-container').exists()).toBe(true)
+    expect(
+      mountHome({ home_style: { show_terminal: false } }).find('.terminal-container').exists()
+    ).toBe(false)
+  })
+})

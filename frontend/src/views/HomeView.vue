@@ -16,26 +16,38 @@
   <div
     v-else-if="compactHomeEnabled"
     data-testid="compact-home"
-    class="flex min-h-screen flex-col bg-gray-50 text-gray-900 dark:bg-dark-950 dark:text-white"
+    :style="brandStyleVars"
+    class="relative flex min-h-screen flex-col overflow-x-clip brand-wash text-gray-900 dark:text-white"
   >
-    <header class="border-b border-gray-200 px-4 py-4 sm:px-6 dark:border-dark-800">
+    <!-- Ambient background -->
+    <div class="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+      <div
+        class="absolute left-1/2 top-0 h-[30rem] w-[30rem] -translate-x-1/2 -translate-y-1/3 rounded-full brand-orb-from blur-3xl"
+      ></div>
+      <div
+        class="absolute bottom-0 right-0 h-72 w-72 translate-x-1/4 translate-y-1/4 rounded-full brand-orb-to blur-3xl"
+      ></div>
+      <div class="hero-grid absolute inset-0"></div>
+    </div>
+
+    <header class="relative z-10 px-4 py-4 sm:px-6">
       <nav class="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 sm:gap-4">
-        <div class="flex min-w-0 flex-1 items-center gap-3">
+        <div class="flex min-w-0 flex-1 items-center gap-2.5">
           <img
             :src="siteLogo || '/logo.svg'"
             alt="Logo"
-            class="h-9 w-9 shrink-0 rounded-lg object-contain"
+            class="h-9 w-9 shrink-0 rounded-xl object-contain shadow-sm"
           />
-          <span class="min-w-0 truncate text-base font-semibold">{{ siteName }}</span>
+          <span class="min-w-0 truncate text-base font-semibold tracking-tight">{{ siteName }}</span>
         </div>
-        <div class="flex max-w-full shrink-0 flex-wrap items-center justify-end gap-2">
+        <div class="flex max-w-full shrink-0 flex-wrap items-center justify-end gap-1.5">
           <LocaleSwitcher />
           <a
             v-if="docUrl"
             :href="docUrl"
             target="_blank"
             rel="noopener noreferrer"
-            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 dark:text-dark-400 dark:hover:bg-dark-800"
+            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-dark-400 dark:hover:bg-white/5 dark:hover:text-white"
             :title="t('home.viewDocs')"
           >
             <Icon name="book" size="md" />
@@ -43,15 +55,16 @@
           <router-link
             v-if="showModelPlazaEntry"
             to="/model-plaza"
-            class="flex h-10 shrink-0 items-center gap-1.5 rounded-lg px-2.5 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-dark-400 dark:hover:bg-dark-800 dark:hover:text-white"
+            class="flex h-9 shrink-0 items-center gap-1.5 rounded-lg px-2.5 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-dark-400 dark:hover:bg-white/5 dark:hover:text-white"
             :title="t('nav.modelPlaza')"
           >
             <Icon name="grid" size="md" />
             <span class="hidden sm:inline">{{ t('nav.modelPlaza') }}</span>
           </router-link>
           <button
-            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 dark:text-dark-400 dark:hover:bg-dark-800"
+            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-dark-400 dark:hover:bg-white/5 dark:hover:text-white"
             :title="isDark ? t('home.switchToLight') : t('home.switchToDark')"
+            :aria-label="isDark ? t('home.switchToLight') : t('home.switchToDark')"
             @click="toggleTheme"
           >
             <Icon v-if="isDark" name="sun" size="md" />
@@ -59,7 +72,7 @@
           </button>
           <router-link
             :to="isAuthenticated ? dashboardPath : '/login'"
-            class="inline-flex min-h-10 shrink-0 items-center justify-center rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200"
+            class="ml-1 shrink-0 rounded-full brand-grad brand-grad-hover brand-shadow px-4 py-2 text-sm font-medium text-white transition-all duration-200 active:scale-[0.98]"
           >
             {{ isAuthenticated ? t('home.dashboard') : t('home.login') }}
           </router-link>
@@ -67,25 +80,54 @@
       </nav>
     </header>
 
-    <main class="flex min-w-0 flex-1 items-center justify-center px-4 py-16 sm:px-6">
-      <div class="min-w-0 max-w-2xl text-center">
-        <img
-          :src="siteLogo || '/logo.svg'"
-          alt="Logo"
-          class="mx-auto mb-6 h-20 w-20 rounded-2xl object-contain"
-        />
-        <h1 class="[overflow-wrap:anywhere] text-3xl font-bold md:text-4xl">{{ siteName }}</h1>
-        <p class="mt-4 whitespace-pre-wrap [overflow-wrap:anywhere] text-base text-gray-600 dark:text-dark-300">{{ siteSubtitle }}</p>
-        <router-link
-          :to="isAuthenticated ? dashboardPath : '/login'"
-          class="mt-8 inline-flex min-h-10 items-center justify-center rounded-lg bg-primary-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-700"
+    <main class="relative z-10 flex min-w-0 flex-1 items-center justify-center px-4 py-14 sm:px-6">
+      <div class="w-full min-w-0 max-w-lg text-center">
+        <div class="relative mx-auto mb-7 h-24 w-24">
+          <span
+            class="absolute inset-0 rounded-3xl brand-grad opacity-40 blur-xl"
+          ></span>
+          <img
+            :src="siteLogo || '/logo.svg'"
+            alt="Logo"
+            class="relative h-24 w-24 rounded-3xl object-contain shadow-xl ring-1 ring-black/5 dark:ring-white/10"
+          />
+        </div>
+
+        <h1 class="[overflow-wrap:anywhere] text-3xl font-bold tracking-tight sm:text-4xl">
+          {{ siteName }}
+        </h1>
+        <p
+          class="mx-auto mt-4 max-w-md whitespace-pre-wrap text-pretty [overflow-wrap:anywhere] text-base leading-relaxed text-gray-600 dark:text-dark-300"
         >
-          {{ isAuthenticated ? t('home.goToDashboard') : t('home.login') }}
-        </router-link>
+          {{ siteSubtitle }}
+        </p>
+
+        <div class="mt-8 flex flex-col items-center justify-center">
+          <router-link
+            :to="isAuthenticated ? dashboardPath : '/login'"
+            class="inline-flex w-full items-center justify-center gap-2 rounded-full brand-grad brand-grad-hover brand-shadow px-8 py-3 text-base font-medium text-white transition-all duration-200 active:scale-[0.98] sm:w-auto"
+          >
+            {{ isAuthenticated ? t('home.goToDashboard') : t('home.getStarted') }}
+            <Icon name="arrowRight" size="md" :stroke-width="2" />
+          </router-link>
+        </div>
+
+        <div class="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2.5">
+          <span
+            v-for="tag in heroTags"
+            :key="tag.label"
+            class="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-dark-400"
+          >
+            <Icon :name="tag.icon" size="sm" class="brand-text" />
+            {{ tag.label }}
+          </span>
+        </div>
       </div>
     </main>
 
-    <footer class="min-w-0 border-t border-gray-200 px-4 py-5 text-center text-sm text-gray-500 [overflow-wrap:anywhere] sm:px-6 dark:border-dark-800 dark:text-dark-400">
+    <footer
+      class="relative z-10 min-w-0 border-t border-gray-200/60 px-4 py-5 text-center text-sm text-gray-500 [overflow-wrap:anywhere] sm:px-6 dark:border-white/5 dark:text-dark-400"
+    >
       &copy; {{ currentYear }} {{ siteName }}
     </footer>
   </div>
@@ -93,105 +135,91 @@
   <!-- Default Home Page -->
   <div
     v-else
-    class="relative flex min-h-screen flex-col overflow-hidden bg-gradient-to-br from-gray-50 via-primary-50/30 to-gray-100 dark:from-dark-950 dark:via-dark-900 dark:to-dark-950"
+    data-testid="default-home"
+    :style="brandStyleVars"
+    class="relative min-h-screen overflow-x-clip brand-wash text-gray-900 dark:text-white"
   >
-    <!-- Background Decorations -->
-    <div class="pointer-events-none absolute inset-0 overflow-hidden">
-      <div
-        class="absolute -right-40 -top-40 h-96 w-96 rounded-full bg-primary-400/20 blur-3xl"
-      ></div>
-      <div
-        class="absolute -bottom-40 -left-40 h-96 w-96 rounded-full bg-primary-500/15 blur-3xl"
-      ></div>
-      <div
-        class="absolute left-1/3 top-1/4 h-72 w-72 rounded-full bg-primary-300/10 blur-3xl"
-      ></div>
-      <div
-        class="absolute bottom-1/4 right-1/4 h-64 w-64 rounded-full bg-primary-400/10 blur-3xl"
-      ></div>
-      <div
-        class="absolute inset-0 bg-[linear-gradient(rgba(20,184,166,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(20,184,166,0.03)_1px,transparent_1px)] bg-[size:64px_64px]"
-      ></div>
-    </div>
-
-    <!-- Header -->
-    <header class="relative z-20 px-6 py-4">
-      <nav class="mx-auto flex max-w-6xl items-center justify-between">
-        <!-- Logo -->
-        <div class="flex items-center">
-          <div class="h-10 w-10 overflow-hidden rounded-xl shadow-md">
+    <!-- ==================== Header ==================== -->
+    <header
+      class="sticky top-0 z-40 border-b border-gray-200/60 bg-white/80 backdrop-blur-xl dark:border-white/5 dark:bg-dark-950/80"
+    >
+      <nav class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
+        <!-- Brand -->
+        <router-link to="/" class="flex min-w-0 items-center gap-2.5">
+          <span
+            class="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-xl brand-grad brand-shadow"
+          >
             <img :src="siteLogo || '/logo.svg'" alt="Logo" class="h-full w-full object-contain" />
-          </div>
+          </span>
+          <span class="min-w-0 truncate text-base font-semibold tracking-tight">{{ siteName }}</span>
+        </router-link>
+
+        <!-- Section anchors -->
+        <div class="hidden items-center gap-1 lg:flex">
+          <a
+            v-for="link in navLinks"
+            :key="link.href"
+            :href="link.href"
+            class="rounded-lg px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-dark-300 dark:hover:bg-white/5 dark:hover:text-white"
+          >
+            {{ link.label }}
+          </a>
         </div>
 
-        <!-- Nav Actions -->
-        <div class="flex items-center gap-3">
-          <!-- Language Switcher -->
+        <!-- Actions -->
+        <div class="flex shrink-0 items-center gap-1.5">
           <LocaleSwitcher />
 
-          <!-- Doc Link -->
           <a
             v-if="docUrl"
             :href="docUrl"
             target="_blank"
             rel="noopener noreferrer"
-            class="rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-dark-400 dark:hover:bg-dark-800 dark:hover:text-white"
+            class="hidden h-9 w-9 items-center justify-center rounded-lg text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 sm:flex dark:text-dark-400 dark:hover:bg-white/5 dark:hover:text-white"
             :title="t('home.viewDocs')"
           >
             <Icon name="book" size="md" />
           </a>
 
-          <!-- Model Plaza Link -->
           <router-link
             v-if="showModelPlazaEntry"
             to="/model-plaza"
-            class="inline-flex items-center gap-1.5 rounded-lg p-2 text-sm text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-dark-400 dark:hover:bg-dark-800 dark:hover:text-white"
+            class="inline-flex h-9 items-center gap-1.5 rounded-lg px-2.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-dark-300 dark:hover:bg-white/5 dark:hover:text-white"
             :title="t('nav.modelPlaza')"
           >
             <Icon name="grid" size="md" />
-            <span class="hidden sm:inline">{{ t('nav.modelPlaza') }}</span>
+            <span class="hidden md:inline">{{ t('nav.modelPlaza') }}</span>
           </router-link>
 
-          <!-- Theme Toggle -->
           <button
-            @click="toggleTheme"
-            class="rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-dark-400 dark:hover:bg-dark-800 dark:hover:text-white"
+            class="flex h-9 w-9 items-center justify-center rounded-lg text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-dark-400 dark:hover:bg-white/5 dark:hover:text-white"
             :title="isDark ? t('home.switchToLight') : t('home.switchToDark')"
+            :aria-label="isDark ? t('home.switchToLight') : t('home.switchToDark')"
+            @click="toggleTheme"
           >
             <Icon v-if="isDark" name="sun" size="md" />
             <Icon v-else name="moon" size="md" />
           </button>
 
-          <!-- Login / Dashboard Button -->
+          <!-- Signed in: avatar chip -->
           <router-link
             v-if="isAuthenticated"
             :to="dashboardPath"
-            class="inline-flex items-center gap-1.5 rounded-full bg-gray-900 py-1 pl-1 pr-2.5 transition-colors hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700"
+            class="ml-1 inline-flex items-center gap-1.5 rounded-full bg-gray-900 py-1 pl-1 pr-2.5 transition-colors hover:bg-gray-800 dark:bg-white/10 dark:hover:bg-white/15"
           >
             <span
-              class="flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-br from-primary-400 to-primary-600 text-[10px] font-semibold text-white"
+              class="flex h-6 w-6 items-center justify-center rounded-full brand-grad text-[10px] font-semibold text-white"
             >
               {{ userInitial }}
             </span>
             <span class="text-xs font-medium text-white">{{ t('home.dashboard') }}</span>
-            <svg
-              class="h-3 w-3 text-gray-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"
-              />
-            </svg>
           </router-link>
+
+          <!-- Signed out: primary CTA -->
           <router-link
             v-else
             to="/login"
-            class="inline-flex items-center rounded-full bg-gray-900 px-3 py-1 text-xs font-medium text-white transition-colors hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700"
+            class="ml-1 rounded-full brand-grad brand-grad-hover brand-shadow px-4 py-2 text-sm font-medium text-white transition-all duration-200 active:scale-[0.98]"
           >
             {{ t('home.login') }}
           </router-link>
@@ -199,36 +227,94 @@
       </nav>
     </header>
 
-    <!-- Main Content -->
-    <main class="relative z-10 flex-1 px-6 py-16">
-      <div class="mx-auto max-w-6xl">
-        <!-- Hero Section - Left/Right Layout -->
-        <div class="mb-12 flex flex-col items-center justify-between gap-12 lg:flex-row lg:gap-16">
-          <!-- Left: Text Content -->
-          <div class="flex-1 text-center lg:text-left">
-            <h1
-              class="mb-4 text-4xl font-bold text-gray-900 dark:text-white md:text-5xl lg:text-6xl"
+    <main class="relative">
+      <!-- ==================== Hero ==================== -->
+      <section class="relative overflow-hidden px-4 pb-20 pt-14 sm:px-6 lg:px-8 lg:pb-28 lg:pt-20">
+        <!-- Ambient background -->
+        <div class="pointer-events-none absolute inset-0" aria-hidden="true">
+          <div
+            class="absolute -right-24 -top-32 h-[26rem] w-[26rem] rounded-full brand-orb-from blur-3xl"
+          ></div>
+          <div
+            class="absolute -left-32 top-24 h-[22rem] w-[22rem] rounded-full brand-orb-to blur-3xl"
+          ></div>
+          <div
+            class="absolute bottom-0 left-1/2 h-[18rem] w-[34rem] -translate-x-1/2 rounded-full brand-orb-from-soft blur-3xl"
+          ></div>
+          <div class="hero-grid absolute inset-0"></div>
+          <div
+            class="absolute inset-x-0 top-0 h-64 bg-gradient-to-b from-white/70 to-transparent dark:from-dark-950/70"
+          ></div>
+        </div>
+
+        <div
+          class="relative mx-auto grid items-center gap-14"
+          :class="
+            showTerminal
+              ? 'max-w-7xl lg:grid-cols-[1.05fr_1fr] lg:gap-16'
+              : 'max-w-4xl lg:grid-cols-1'
+          "
+        >
+          <!-- Left: copy -->
+          <div class="text-center lg:text-left">
+            <span
+              class="inline-flex items-center gap-2 rounded-full brand-border brand-text border bg-white/70 px-3.5 py-1.5 text-xs font-medium shadow-sm backdrop-blur-sm dark:bg-white/5"
             >
-              {{ siteName }}
+              <span class="relative flex h-1.5 w-1.5">
+                <span class="absolute inline-flex h-full w-full brand-bg animate-ping rounded-full opacity-75"></span>
+                <span class="brand-bg relative inline-flex h-1.5 w-1.5 rounded-full"></span>
+              </span>
+              {{ t('home.heroBadge') }}
+            </span>
+
+            <h1
+              class="mt-6 text-balance text-4xl font-bold leading-[1.1] tracking-tight sm:text-5xl lg:text-6xl"
+            >
+              {{ heroTitle }}
             </h1>
-            <p class="mb-8 text-lg text-gray-600 dark:text-dark-300 md:text-xl">
-              {{ siteSubtitle }}
+
+            <p
+              class="mx-auto mt-6 max-w-xl text-pretty text-base leading-relaxed text-gray-600 sm:text-lg lg:mx-0 dark:text-dark-300"
+            >
+              {{ heroDescription }}
             </p>
 
-            <!-- CTA Button -->
-            <div>
+            <!-- CTAs -->
+            <div class="mt-9 flex flex-col items-center gap-3 sm:flex-row lg:justify-start">
               <router-link
                 :to="isAuthenticated ? dashboardPath : '/login'"
-                class="btn btn-primary px-8 py-3 text-base shadow-lg shadow-primary-500/30"
+                class="inline-flex w-full items-center justify-center gap-2 rounded-full brand-grad brand-grad-hover brand-shadow px-7 py-3 text-base font-medium text-white transition-all duration-200 active:scale-[0.98] sm:w-auto"
               >
                 {{ isAuthenticated ? t('home.goToDashboard') : t('home.getStarted') }}
-                <Icon name="arrowRight" size="md" class="ml-2" :stroke-width="2" />
+                <Icon name="arrowRight" size="md" :stroke-width="2" />
               </router-link>
+              <a
+                v-if="docUrl"
+                :href="docUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn btn-secondary btn-lg w-full rounded-full px-7 sm:w-auto"
+              >
+                <Icon name="book" size="md" />
+                {{ t('home.viewDocs') }}
+              </a>
+            </div>
+
+            <!-- Value tags -->
+            <div class="mt-9 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 lg:justify-start">
+              <span
+                v-for="tag in heroTags"
+                :key="tag.label"
+                class="inline-flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-dark-300"
+              >
+                <Icon :name="tag.icon" size="sm" class="brand-text" />
+                {{ tag.label }}
+              </span>
             </div>
           </div>
 
-          <!-- Right: Terminal Animation -->
-          <div class="flex flex-1 justify-center lg:justify-end">
+          <!-- Right: request terminal -->
+          <div v-if="showTerminal" class="flex justify-center lg:justify-end">
             <div class="terminal-container">
               <div class="terminal-window">
                 <!-- Window header -->
@@ -238,7 +324,7 @@
                     <span class="btn-minimize"></span>
                     <span class="btn-maximize"></span>
                   </div>
-                  <span class="terminal-title">terminal</span>
+                  <span class="terminal-title">gateway</span>
                 </div>
                 <!-- Terminal content -->
                 <div class="terminal-body">
@@ -249,245 +335,284 @@
                     <span class="code-url">/v1/messages</span>
                   </div>
                   <div class="code-line line-2">
-                    <span class="code-comment"># Routing to upstream...</span>
+                    <span class="code-comment"># routing to the fastest upstream…</span>
                   </div>
                   <div class="code-line line-3">
                     <span class="code-success">200 OK</span>
                     <span class="code-response">{ "content": "Hello!" }</span>
                   </div>
                   <div class="code-line line-4">
+                    <span class="code-dim">1.24s</span>
+                    <span class="code-dim">·</span>
+                    <span class="code-dim">$0.0031</span>
+                    <span class="code-dim">·</span>
+                    <span class="code-dim">claude-sonnet</span>
+                  </div>
+                  <div class="code-line line-5">
                     <span class="code-prompt">$</span>
                     <span class="cursor"></span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Floating caption -->
+              <div class="terminal-badge">
+                <Icon name="shield" size="sm" class="brand-text" />
+                <span>{{ t('home.tags.stickySession') }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== Providers ==================== -->
+      <section v-if="showProviders" id="providers" class="scroll-mt-24 px-4 py-14 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-7xl">
+          <div class="text-center">
+            <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">
+              {{ t('home.providers.title') }}
+            </h2>
+            <p class="mt-3 text-sm text-gray-600 dark:text-dark-400">
+              {{ t('home.providers.description') }}
+            </p>
+          </div>
+
+          <div class="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+            <div
+              v-for="provider in providerList"
+              :key="provider.model"
+              class="group flex items-center gap-3 rounded-2xl border border-gray-200/70 bg-white/70 px-4 py-3.5 backdrop-blur-sm transition-all duration-300 brand-hover hover:-translate-y-0.5 dark:border-white/5 dark:bg-white/5"
+            >
+              <span
+                class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white shadow-sm ring-1 ring-black/5 dark:ring-white/10"
+              >
+                <ModelIcon :model="provider.model" size="20px" />
+              </span>
+              <span class="min-w-0 truncate text-sm font-medium text-gray-700 dark:text-dark-200">
+                {{ provider.label }}
+              </span>
+            </div>
+
+            <!-- More -->
+            <div
+              class="flex items-center gap-3 rounded-2xl border border-dashed border-gray-300/70 bg-transparent px-4 py-3.5 dark:border-white/10"
+            >
+              <span
+                class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gray-100 text-gray-500 dark:bg-white/5 dark:text-dark-400"
+              >
+                <Icon name="plus" size="sm" />
+              </span>
+              <span class="min-w-0 truncate text-sm font-medium text-gray-500 dark:text-dark-400">
+                {{ t('home.providers.more') }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== Pain points ==================== -->
+      <section v-if="showPainPoints" class="px-4 py-14 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-7xl">
+          <h2 class="text-center text-2xl font-bold tracking-tight sm:text-3xl">
+            {{ t('home.painPoints.title') }}
+          </h2>
+
+          <div class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div
+              v-for="point in painPoints"
+              :key="point.title"
+              class="group rounded-2xl border border-gray-200/70 bg-white/70 p-6 backdrop-blur-sm transition-all duration-300 hover:border-rose-400/30 hover:shadow-lg hover:shadow-rose-500/5 dark:border-white/5 dark:bg-white/5"
+            >
+              <span
+                class="flex h-11 w-11 items-center justify-center rounded-xl bg-rose-50 text-rose-500 transition-transform duration-300 group-hover:scale-110 dark:bg-rose-500/10 dark:text-rose-400"
+              >
+                <Icon :name="point.icon" size="lg" />
+              </span>
+              <h3 class="mt-4 text-base font-semibold">{{ point.title }}</h3>
+              <p class="mt-2 text-sm leading-relaxed text-gray-600 dark:text-dark-400">
+                {{ point.desc }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== Solutions / features ==================== -->
+      <section id="features" class="scroll-mt-24 px-4 py-14 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-7xl">
+          <div class="text-center">
+            <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">
+              {{ t('home.solutions.title') }}
+            </h2>
+            <p class="mt-3 text-sm text-gray-600 dark:text-dark-400">
+              {{ t('home.solutions.subtitle') }}
+            </p>
+          </div>
+
+          <div class="mt-12 grid gap-6 lg:grid-cols-3">
+            <div
+              v-for="(step, index) in solutionSteps"
+              :key="step.title"
+              class="group relative overflow-hidden rounded-3xl border border-gray-200/70 bg-white/70 p-7 backdrop-blur-sm transition-all duration-300 brand-hover hover:-translate-y-1 dark:border-white/5 dark:bg-white/5"
+            >
+              <!-- Step index watermark -->
+              <span
+                class="pointer-events-none absolute right-4 top-3 text-6xl font-bold leading-none text-gray-900/5 dark:text-white/5"
+              >
+                {{ String(index + 1).padStart(2, '0') }}
+              </span>
+
+              <span
+                class="relative flex h-12 w-12 items-center justify-center rounded-2xl brand-grad brand-shadow text-white transition-transform duration-300 group-hover:scale-110"
+              >
+                <Icon :name="step.icon" size="lg" />
+              </span>
+
+              <h3 class="relative mt-5 text-lg font-semibold">{{ step.title }}</h3>
+              <p class="relative mt-2.5 text-sm leading-relaxed text-gray-600 dark:text-dark-400">
+                {{ step.desc }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== Comparison ==================== -->
+      <section v-if="showComparison" id="comparison" class="scroll-mt-24 px-4 py-14 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-4xl">
+          <h2 class="text-center text-2xl font-bold tracking-tight sm:text-3xl">
+            {{ t('home.comparison.title') }}
+          </h2>
+
+          <div
+            class="mt-10 overflow-hidden rounded-3xl border border-gray-200/70 bg-white/70 shadow-sm backdrop-blur-sm dark:border-white/5 dark:bg-white/5"
+          >
+            <div class="overflow-x-auto">
+              <div class="min-w-[620px]">
+                <!-- Head -->
+                <div class="grid grid-cols-[1.1fr_1.3fr_1.3fr] border-b border-gray-200/70 dark:border-white/5">
+                  <div
+                    class="px-5 py-4 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-dark-400"
+                  >
+                    {{ t('home.comparison.headers.feature') }}
+                  </div>
+                  <div
+                    class="px-5 py-4 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-dark-400"
+                  >
+                    {{ t('home.comparison.headers.official') }}
+                  </div>
+                  <div
+                    class="flex items-center gap-2 brand-soft-strong brand-text px-5 py-4 text-xs font-semibold uppercase tracking-wider"
+                  >
+                    {{ t('home.comparison.headers.us') }}
+                    <span
+                      class="brand-bg rounded-full px-2 py-0.5 text-[10px] font-semibold normal-case text-white"
+                    >
+                      {{ t('home.comparison.badge') }}
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Rows -->
+                <div
+                  v-for="(row, index) in comparisonRows"
+                  :key="row.feature"
+                  class="grid grid-cols-[1.1fr_1.3fr_1.3fr]"
+                  :class="index !== comparisonRows.length - 1
+                    ? 'border-b border-gray-200/70 dark:border-white/5'
+                    : ''"
+                >
+                  <div class="px-5 py-4 text-sm font-medium text-gray-900 dark:text-white">
+                    {{ row.feature }}
+                  </div>
+                  <div class="px-5 py-4 text-sm text-gray-500 dark:text-dark-400">
+                    {{ row.official }}
+                  </div>
+                  <div class="flex items-start gap-2 brand-soft px-5 py-4 text-sm font-medium text-gray-900 dark:text-white">
+                    <Icon name="check" size="sm" class="brand-text mt-0.5 shrink-0" :stroke-width="2.5" />
+                    {{ row.us }}
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+      </section>
 
-        <!-- Feature Tags - Centered -->
-        <div class="mb-12 flex flex-wrap items-center justify-center gap-4 md:gap-6">
+      <!-- ==================== CTA ==================== -->
+      <section class="px-4 py-14 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-5xl">
           <div
-            class="inline-flex items-center gap-2.5 rounded-full border border-gray-200/50 bg-white/80 px-5 py-2.5 shadow-sm backdrop-blur-sm dark:border-dark-700/50 dark:bg-dark-800/80"
+            class="relative overflow-hidden rounded-3xl brand-grad brand-shadow-lg px-6 py-14 text-center sm:px-12"
           >
-            <Icon name="swap" size="sm" class="text-primary-500" />
-            <span class="text-sm font-medium text-gray-700 dark:text-dark-200">{{
-              t('home.tags.subscriptionToApi')
-            }}</span>
-          </div>
-          <div
-            class="inline-flex items-center gap-2.5 rounded-full border border-gray-200/50 bg-white/80 px-5 py-2.5 shadow-sm backdrop-blur-sm dark:border-dark-700/50 dark:bg-dark-800/80"
-          >
-            <Icon name="shield" size="sm" class="text-primary-500" />
-            <span class="text-sm font-medium text-gray-700 dark:text-dark-200">{{
-              t('home.tags.stickySession')
-            }}</span>
-          </div>
-          <div
-            class="inline-flex items-center gap-2.5 rounded-full border border-gray-200/50 bg-white/80 px-5 py-2.5 shadow-sm backdrop-blur-sm dark:border-dark-700/50 dark:bg-dark-800/80"
-          >
-            <Icon name="chart" size="sm" class="text-primary-500" />
-            <span class="text-sm font-medium text-gray-700 dark:text-dark-200">{{
-              t('home.tags.realtimeBilling')
-            }}</span>
-          </div>
-        </div>
-
-        <!-- Features Grid -->
-        <div class="mb-12 grid gap-6 md:grid-cols-3">
-          <!-- Feature 1: Unified Gateway -->
-          <div
-            class="group rounded-2xl border border-gray-200/50 bg-white/60 p-6 backdrop-blur-sm transition-all duration-300 hover:shadow-xl hover:shadow-primary-500/10 dark:border-dark-700/50 dark:bg-dark-800/60"
-          >
-            <div
-              class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg shadow-blue-500/30 transition-transform group-hover:scale-110"
-            >
-              <Icon name="server" size="lg" class="text-white" />
+            <div class="pointer-events-none absolute inset-0" aria-hidden="true">
+              <div class="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-white/15 blur-3xl"></div>
+              <div class="absolute -bottom-20 -left-10 h-56 w-56 brand-orb-to rounded-full blur-3xl"></div>
+              <div class="cta-grid absolute inset-0 opacity-40"></div>
             </div>
-            <h3 class="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
-              {{ t('home.features.unifiedGateway') }}
-            </h3>
-            <p class="text-sm leading-relaxed text-gray-600 dark:text-dark-400">
-              {{ t('home.features.unifiedGatewayDesc') }}
-            </p>
-          </div>
 
-          <!-- Feature 2: Account Pool -->
-          <div
-            class="group rounded-2xl border border-gray-200/50 bg-white/60 p-6 backdrop-blur-sm transition-all duration-300 hover:shadow-xl hover:shadow-primary-500/10 dark:border-dark-700/50 dark:bg-dark-800/60"
-          >
-            <div
-              class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 shadow-lg shadow-primary-500/30 transition-transform group-hover:scale-110"
-            >
-              <svg
-                class="h-6 w-6 text-white"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                stroke-width="1.5"
+            <div class="relative">
+              <h2 class="text-2xl font-bold tracking-tight text-white sm:text-3xl">
+                {{ t('home.cta.title') }}
+              </h2>
+              <p class="mx-auto mt-4 max-w-xl text-pretty text-sm leading-relaxed text-white/85 sm:text-base">
+                {{ t('home.cta.description') }}
+              </p>
+              <router-link
+                :to="isAuthenticated ? dashboardPath : '/register'"
+                class="mt-8 inline-flex items-center gap-2 rounded-full brand-cta-btn bg-white px-7 py-3 text-sm font-semibold shadow-lg shadow-black/10 transition-transform duration-200 hover:-translate-y-0.5"
               >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"
-                />
-              </svg>
+                {{ isAuthenticated ? t('home.goToDashboard') : t('home.cta.button') }}
+                <Icon name="arrowRight" size="md" :stroke-width="2" />
+              </router-link>
             </div>
-            <h3 class="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
-              {{ t('home.features.multiAccount') }}
-            </h3>
-            <p class="text-sm leading-relaxed text-gray-600 dark:text-dark-400">
-              {{ t('home.features.multiAccountDesc') }}
-            </p>
-          </div>
-
-          <!-- Feature 3: Billing & Quota -->
-          <div
-            class="group rounded-2xl border border-gray-200/50 bg-white/60 p-6 backdrop-blur-sm transition-all duration-300 hover:shadow-xl hover:shadow-primary-500/10 dark:border-dark-700/50 dark:bg-dark-800/60"
-          >
-            <div
-              class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 shadow-lg shadow-purple-500/30 transition-transform group-hover:scale-110"
-            >
-              <svg
-                class="h-6 w-6 text-white"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                stroke-width="1.5"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z"
-                />
-              </svg>
-            </div>
-            <h3 class="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
-              {{ t('home.features.balanceQuota') }}
-            </h3>
-            <p class="text-sm leading-relaxed text-gray-600 dark:text-dark-400">
-              {{ t('home.features.balanceQuotaDesc') }}
-            </p>
           </div>
         </div>
-
-        <!-- Supported Providers -->
-        <div class="mb-8 text-center">
-          <h2 class="mb-3 text-2xl font-bold text-gray-900 dark:text-white">
-            {{ t('home.providers.title') }}
-          </h2>
-          <p class="text-sm text-gray-600 dark:text-dark-400">
-            {{ t('home.providers.description') }}
-          </p>
-        </div>
-
-        <div class="mb-16 flex flex-wrap items-center justify-center gap-4">
-          <!-- Claude - Supported -->
-          <div
-            class="flex items-center gap-2 rounded-xl border border-primary-200 bg-white/60 px-5 py-3 ring-1 ring-primary-500/20 backdrop-blur-sm dark:border-primary-800 dark:bg-dark-800/60"
-          >
-            <div
-              class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-orange-400 to-orange-500"
-            >
-              <span class="text-xs font-bold text-white">C</span>
-            </div>
-            <span class="text-sm font-medium text-gray-700 dark:text-dark-200">{{ t('home.providers.claude') }}</span>
-            <span
-              class="rounded bg-primary-100 px-1.5 py-0.5 text-[10px] font-medium text-primary-600 dark:bg-primary-900/30 dark:text-primary-400"
-              >{{ t('home.providers.supported') }}</span
-            >
-          </div>
-          <!-- GPT - Supported -->
-          <div
-            class="flex items-center gap-2 rounded-xl border border-primary-200 bg-white/60 px-5 py-3 ring-1 ring-primary-500/20 backdrop-blur-sm dark:border-primary-800 dark:bg-dark-800/60"
-          >
-            <div
-              class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-green-500 to-green-600"
-            >
-              <span class="text-xs font-bold text-white">G</span>
-            </div>
-            <span class="text-sm font-medium text-gray-700 dark:text-dark-200">GPT</span>
-            <span
-              class="rounded bg-primary-100 px-1.5 py-0.5 text-[10px] font-medium text-primary-600 dark:bg-primary-900/30 dark:text-primary-400"
-              >{{ t('home.providers.supported') }}</span
-            >
-          </div>
-          <!-- Gemini - Supported -->
-          <div
-            class="flex items-center gap-2 rounded-xl border border-primary-200 bg-white/60 px-5 py-3 ring-1 ring-primary-500/20 backdrop-blur-sm dark:border-primary-800 dark:bg-dark-800/60"
-          >
-            <div
-              class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-600"
-            >
-              <span class="text-xs font-bold text-white">G</span>
-            </div>
-            <span class="text-sm font-medium text-gray-700 dark:text-dark-200">{{ t('home.providers.gemini') }}</span>
-            <span
-              class="rounded bg-primary-100 px-1.5 py-0.5 text-[10px] font-medium text-primary-600 dark:bg-primary-900/30 dark:text-primary-400"
-              >{{ t('home.providers.supported') }}</span
-            >
-          </div>
-          <!-- Antigravity - Supported -->
-          <div
-            class="flex items-center gap-2 rounded-xl border border-primary-200 bg-white/60 px-5 py-3 ring-1 ring-primary-500/20 backdrop-blur-sm dark:border-primary-800 dark:bg-dark-800/60"
-          >
-            <div
-              class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-rose-500 to-pink-600"
-            >
-              <span class="text-xs font-bold text-white">A</span>
-            </div>
-            <span class="text-sm font-medium text-gray-700 dark:text-dark-200">{{ t('home.providers.antigravity') }}</span>
-            <span
-              class="rounded bg-primary-100 px-1.5 py-0.5 text-[10px] font-medium text-primary-600 dark:bg-primary-900/30 dark:text-primary-400"
-              >{{ t('home.providers.supported') }}</span
-            >
-          </div>
-          <!-- More - Coming Soon -->
-          <div
-            class="flex items-center gap-2 rounded-xl border border-gray-200/50 bg-white/40 px-5 py-3 opacity-60 backdrop-blur-sm dark:border-dark-700/50 dark:bg-dark-800/40"
-          >
-            <div
-              class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-gray-500 to-gray-600"
-            >
-              <span class="text-xs font-bold text-white">+</span>
-            </div>
-            <span class="text-sm font-medium text-gray-700 dark:text-dark-200">{{ t('home.providers.more') }}</span>
-            <span
-              class="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-500 dark:bg-dark-700 dark:text-dark-400"
-              >{{ t('home.providers.soon') }}</span
-            >
-          </div>
-        </div>
-      </div>
+      </section>
     </main>
 
-    <!-- Footer -->
-    <footer class="relative z-10 border-t border-gray-200/50 px-6 py-8 dark:border-dark-800/50">
-      <div
-        class="mx-auto flex max-w-6xl flex-col items-center justify-center gap-4 text-center sm:flex-row sm:text-left"
-      >
-        <p class="text-sm text-gray-500 dark:text-dark-400">
-          &copy; {{ currentYear }} {{ siteName }}. {{ t('home.footer.allRightsReserved') }}
-        </p>
-        <div class="flex items-center gap-4">
+    <!-- ==================== Footer ==================== -->
+    <footer class="border-t border-gray-200/70 px-4 py-10 sm:px-6 lg:px-8 dark:border-white/5">
+      <div class="mx-auto flex max-w-7xl flex-col items-center justify-between gap-5 sm:flex-row">
+        <div class="flex items-center gap-2.5">
+          <span
+            class="flex h-8 w-8 items-center justify-center overflow-hidden rounded-lg brand-grad"
+          >
+            <img :src="siteLogo || '/logo.svg'" alt="Logo" class="h-full w-full object-contain" />
+          </span>
+          <span class="text-sm font-medium">{{ siteName }}</span>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
           <a
             v-if="docUrl"
             :href="docUrl"
             target="_blank"
             rel="noopener noreferrer"
-            class="text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-dark-400 dark:hover:text-white"
+            class="text-sm text-gray-500 transition-colors hover:text-gray-900 dark:text-dark-400 dark:hover:text-white"
           >
             {{ t('home.docs') }}
           </a>
+          <router-link
+            v-if="showModelPlazaEntry"
+            to="/model-plaza"
+            class="text-sm text-gray-500 transition-colors hover:text-gray-900 dark:text-dark-400 dark:hover:text-white"
+          >
+            {{ t('nav.modelPlaza') }}
+          </router-link>
           <a
             :href="githubUrl"
             target="_blank"
             rel="noopener noreferrer"
-            class="text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-dark-400 dark:hover:text-white"
+            class="text-sm text-gray-500 transition-colors hover:text-gray-900 dark:text-dark-400 dark:hover:text-white"
           >
             GitHub
           </a>
         </div>
+
+        <p class="text-sm text-gray-500 dark:text-dark-400">
+          &copy; {{ currentYear }} {{ siteName }}. {{ t('home.footer.allRightsReserved') }}
+        </p>
       </div>
     </footer>
   </div>
@@ -498,9 +623,29 @@ import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore, useAppStore } from '@/stores'
 import LocaleSwitcher from '@/components/common/LocaleSwitcher.vue'
+import ModelIcon from '@/components/common/ModelIcon.vue'
 import Icon from '@/components/icons/Icon.vue'
 import { sanitizeUrl } from '@/utils/url'
 import { FeatureFlags, isFeatureFlagEnabled } from '@/utils/featureFlags'
+import { homeStyleCssVars, normalizeHomeStyle } from '@/constants/homeStyle'
+
+// Subset of Icon names used on this page; keeps v-for data type-safe.
+type IconName =
+  | 'creditCard'
+  | 'users'
+  | 'exclamationTriangle'
+  | 'chartBar'
+  | 'key'
+  | 'swap'
+  | 'shield'
+  | 'chart'
+  | 'check'
+  | 'arrowRight'
+  | 'book'
+  | 'grid'
+  | 'sun'
+  | 'moon'
+  | 'plus'
 
 const { t } = useI18n()
 
@@ -516,6 +661,17 @@ const homeContent = computed(() => appStore.cachedPublicSettings?.home_content |
 const hasHomeContent = computed(() => homeContent.value.trim().length > 0)
 const compactHomeEnabled = computed(() => appStore.cachedPublicSettings?.compact_home_enabled === true)
 const modelPlazaEnabled = computed(() => isFeatureFlagEnabled(FeatureFlags.modelPlaza))
+
+// Admin-configurable homepage appearance. normalizeHomeStyle() fills in the
+// shipped defaults so an older or partial payload cannot blank the page.
+const homeStyle = computed(() => normalizeHomeStyle(appStore.cachedPublicSettings?.home_style))
+const brandStyleVars = computed(() => homeStyleCssVars(homeStyle.value))
+const heroTitle = computed(() => homeStyle.value.hero_title || t('home.heroSubtitle'))
+const heroDescription = computed(() => homeStyle.value.hero_desc || t('home.heroDescription'))
+const showProviders = computed(() => homeStyle.value.show_providers)
+const showPainPoints = computed(() => homeStyle.value.show_pain_points)
+const showComparison = computed(() => homeStyle.value.show_comparison)
+const showTerminal = computed(() => homeStyle.value.show_terminal)
 
 // Check if homeContent is a URL (for iframe display)
 const isHomeContentUrl = computed(() => {
@@ -547,6 +703,108 @@ const userInitial = computed(() => {
 
 // Current year for footer
 const currentYear = computed(() => new Date().getFullYear())
+
+// Page content ------------------------------------------------------------
+// Anchors for sections that are currently visible; a hidden section must not
+// leave a dead link in the header.
+const navLinks = computed(() => {
+  const links: { href: string; label: string }[] = [{ href: '#features', label: t('home.nav.features') }]
+  if (showProviders.value) {
+    links.push({ href: '#providers', label: t('home.nav.providers') })
+  }
+  if (showComparison.value) {
+    links.push({ href: '#comparison', label: t('home.nav.comparison') })
+  }
+  return links
+})
+
+const heroTags = computed<{ icon: IconName; label: string }[]>(() => [
+  { icon: 'swap', label: t('home.tags.subscriptionToApi') },
+  { icon: 'shield', label: t('home.tags.stickySession') },
+  { icon: 'chart', label: t('home.tags.realtimeBilling') },
+])
+
+// Brand marks come from ModelIcon's bundled @lobehub icon set.
+const providerList = computed(() => [
+  { model: 'claude', label: t('home.providers.claude') },
+  { model: 'openai', label: t('home.providers.openai') },
+  { model: 'gemini', label: t('home.providers.gemini') },
+  { model: 'deepseek', label: t('home.providers.deepseek') },
+  { model: 'qwen', label: t('home.providers.qwen') },
+  { model: 'xai', label: t('home.providers.grok') },
+  { model: 'moonshot', label: t('home.providers.kimi') },
+  { model: 'zhipu', label: t('home.providers.zhipu') },
+  { model: 'antigravity', label: t('home.providers.antigravity') },
+])
+
+const painPoints = computed<{ icon: IconName; title: string; desc: string }[]>(() => [
+  {
+    icon: 'creditCard',
+    title: t('home.painPoints.items.expensive.title'),
+    desc: t('home.painPoints.items.expensive.desc'),
+  },
+  {
+    icon: 'users',
+    title: t('home.painPoints.items.complex.title'),
+    desc: t('home.painPoints.items.complex.desc'),
+  },
+  {
+    icon: 'exclamationTriangle',
+    title: t('home.painPoints.items.unstable.title'),
+    desc: t('home.painPoints.items.unstable.desc'),
+  },
+  {
+    icon: 'chartBar',
+    title: t('home.painPoints.items.noControl.title'),
+    desc: t('home.painPoints.items.noControl.desc'),
+  },
+])
+
+const solutionSteps = computed<{ icon: IconName; title: string; desc: string }[]>(() => [
+  {
+    icon: 'key',
+    title: t('home.features.unifiedGateway'),
+    desc: t('home.features.unifiedGatewayDesc'),
+  },
+  {
+    icon: 'swap',
+    title: t('home.features.multiAccount'),
+    desc: t('home.features.multiAccountDesc'),
+  },
+  {
+    icon: 'creditCard',
+    title: t('home.features.balanceQuota'),
+    desc: t('home.features.balanceQuotaDesc'),
+  },
+])
+
+const comparisonRows = computed(() => [
+  {
+    feature: t('home.comparison.items.pricing.feature'),
+    official: t('home.comparison.items.pricing.official'),
+    us: t('home.comparison.items.pricing.us'),
+  },
+  {
+    feature: t('home.comparison.items.models.feature'),
+    official: t('home.comparison.items.models.official'),
+    us: t('home.comparison.items.models.us'),
+  },
+  {
+    feature: t('home.comparison.items.management.feature'),
+    official: t('home.comparison.items.management.official'),
+    us: t('home.comparison.items.management.us'),
+  },
+  {
+    feature: t('home.comparison.items.stability.feature'),
+    official: t('home.comparison.items.stability.official'),
+    us: t('home.comparison.items.stability.us'),
+  },
+  {
+    feature: t('home.comparison.items.control.feature'),
+    official: t('home.comparison.items.control.official'),
+    us: t('home.comparison.items.control.us'),
+  },
+])
 
 // Toggle theme
 function toggleTheme() {
@@ -581,17 +839,120 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Terminal Container */
+/* ============ Brand accent (admin-configurable via home_style) ============
+   Every brand-colored surface reads these custom properties, so changing the
+   accent in the admin settings re-tints the whole page without a rebuild.
+   The *-rgb variables hold a space-separated triplet for `rgb(var(--x) / a)`. */
+.brand-grad {
+  background-image: linear-gradient(135deg, rgb(var(--brand-from-rgb)), rgb(var(--brand-to-rgb)));
+}
+
+.brand-grad-hover:hover {
+  filter: brightness(1.08);
+}
+
+.brand-shadow {
+  box-shadow: 0 10px 30px rgb(var(--brand-from-rgb) / 0.25);
+}
+
+.brand-shadow-lg {
+  box-shadow: 0 25px 50px -12px rgb(var(--brand-from-rgb) / 0.35);
+}
+
+.brand-bg {
+  background-color: rgb(var(--brand-from-rgb));
+}
+
+.brand-text {
+  color: rgb(var(--brand-from-rgb));
+}
+
+.brand-border {
+  border-color: rgb(var(--brand-from-rgb) / 0.25);
+}
+
+.brand-soft {
+  background-color: rgb(var(--brand-from-rgb) / 0.05);
+}
+
+.brand-soft-strong {
+  background-color: rgb(var(--brand-from-rgb) / 0.1);
+}
+
+.brand-orb-from {
+  background-color: rgb(var(--brand-from-rgb) / 0.22);
+}
+
+.brand-orb-from-soft {
+  background-color: rgb(var(--brand-from-rgb) / 0.14);
+}
+
+.brand-orb-to {
+  background-color: rgb(var(--brand-to-rgb) / 0.18);
+}
+
+.brand-hover:hover {
+  border-color: rgb(var(--brand-from-rgb) / 0.32);
+  box-shadow: 0 10px 30px rgb(var(--brand-from-rgb) / 0.1);
+}
+
+.brand-cta-btn {
+  color: rgb(var(--brand-from-rgb));
+}
+
+.brand-cta-btn:hover {
+  background-color: rgb(var(--brand-from-rgb) / 0.08);
+}
+
+.brand-wash {
+  background-image: linear-gradient(
+    to bottom,
+    #ffffff,
+    rgb(var(--brand-from-rgb) / 0.06),
+    #ffffff
+  );
+}
+
+.dark .brand-wash {
+  background-image: linear-gradient(to bottom, #020617, #0f172a, #020617);
+}
+
+/* ============ Background patterns ============ */
+.hero-grid {
+  background-image:
+    linear-gradient(to right, rgb(var(--brand-from-rgb) / 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(var(--brand-from-rgb) / 0.08) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 90% 65% at 50% 0%, #000 30%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 90% 65% at 50% 0%, #000 30%, transparent 100%);
+}
+
+.dark .hero-grid {
+  background-image:
+    linear-gradient(to right, rgb(var(--brand-from-rgb) / 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(var(--brand-from-rgb) / 0.1) 1px, transparent 1px);
+}
+
+.cta-grid {
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.14) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.14) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(ellipse 70% 80% at 50% 50%, #000 20%, transparent 90%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 80% at 50% 50%, #000 20%, transparent 90%);
+}
+
+/* ============ Terminal ============ */
 .terminal-container {
   position: relative;
   display: inline-block;
 }
 
-/* Terminal Window */
 .terminal-window {
-  width: 420px;
+  width: 100%;
+  max-width: 460px;
   background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
-  border-radius: 14px;
+  border-radius: 16px;
   box-shadow:
     0 25px 50px -12px rgba(0, 0, 0, 0.4),
     0 0 0 1px rgba(255, 255, 255, 0.1),
@@ -605,7 +966,6 @@ onMounted(() => {
   transform: perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(-4px);
 }
 
-/* Terminal Header */
 .terminal-header {
   display: flex;
   align-items: center;
@@ -644,11 +1004,10 @@ onMounted(() => {
   margin-right: 52px;
 }
 
-/* Terminal Body */
 .terminal-body {
   padding: 20px 24px;
   font-family: ui-monospace, 'Fira Code', monospace;
-  font-size: 14px;
+  font-size: 13.5px;
   line-height: 2;
 }
 
@@ -671,7 +1030,10 @@ onMounted(() => {
   animation-delay: 1.8s;
 }
 .line-4 {
-  animation-delay: 2.5s;
+  animation-delay: 2.4s;
+}
+.line-5 {
+  animation-delay: 2.9s;
 }
 
 @keyframes line-appear {
@@ -712,8 +1074,12 @@ onMounted(() => {
 .code-response {
   color: #fbbf24;
 }
+.code-dim {
+  color: #64748b;
+  font-size: 12.5px;
+}
 
-/* Blinking Cursor */
+/* Blinking cursor */
 .cursor {
   display: inline-block;
   width: 8px;
@@ -733,12 +1099,69 @@ onMounted(() => {
   }
 }
 
-/* Dark mode adjustments */
-:deep(.dark) .terminal-window {
+/* Floating caption on the terminal */
+.terminal-badge {
+  position: absolute;
+  bottom: -18px;
+  left: -14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #334155;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(8px);
+  animation: badge-float 4s ease-in-out infinite;
+}
+
+.dark .terminal-badge {
+  color: #e2e8f0;
+  background: rgba(30, 41, 59, 0.9);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+@keyframes badge-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+/* Dark mode terminal glow */
+.dark .terminal-window {
   box-shadow:
     0 25px 50px -12px rgba(0, 0, 0, 0.6),
-    0 0 0 1px rgba(20, 184, 166, 0.2),
-    0 0 40px rgba(20, 184, 166, 0.1),
+    0 0 0 1px rgb(var(--brand-from-rgb) / 0.25),
+    0 0 40px rgb(var(--brand-to-rgb) / 0.12),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+@media (max-width: 640px) {
+  .terminal-badge {
+    left: 4px;
+    bottom: -16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .code-line,
+  .cursor,
+  .terminal-badge {
+    animation: none;
+    opacity: 1;
+  }
+  .terminal-window,
+  .terminal-window:hover {
+    transition: none;
+    transform: none;
+  }
 }
 </style>

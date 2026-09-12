@@ -208,6 +208,25 @@ export interface LoginAgreementDocument {
   content_md: string
 }
 
+/**
+ * Admin-configurable homepage appearance options. Persisted server-side as a
+ * single JSON object under the `home_style` setting.
+ */
+export interface HomeStyle {
+  /** Brand gradient start color, `#RRGGBB`. */
+  accent_from: string
+  /** Brand gradient end color, `#RRGGBB`. */
+  accent_to: string
+  /** Overrides the built-in (localized) hero title when non-empty. */
+  hero_title: string
+  /** Overrides the built-in (localized) hero description when non-empty. */
+  hero_desc: string
+  show_providers: boolean
+  show_pain_points: boolean
+  show_comparison: boolean
+  show_terminal: boolean
+}
+
 export interface PublicSettings {
   registration_enabled: boolean
   email_verify_enabled: boolean
@@ -240,6 +259,7 @@ export interface PublicSettings {
   doc_url: string
   home_content: string
   compact_home_enabled: boolean
+  home_style?: HomeStyle
   hide_ccs_import_button: boolean
   payment_enabled: boolean
   risk_control_enabled: boolean

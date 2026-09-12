@@ -902,6 +902,16 @@ func TestAPIContracts(t *testing.T) {
 					"codex_cli_only_blacklist": "",
 					"codex_cli_only_whitelist": "",
 					"compact_home_enabled": false,
+					"home_style": {
+						"accent_from": "#6366F1",
+						"accent_to": "#06B6D4",
+						"hero_title": "",
+						"hero_desc": "",
+						"show_providers": true,
+						"show_pain_points": true,
+						"show_comparison": true,
+						"show_terminal": true
+					},
 					"codex_cli_only_allow_app_server_clients": false,
 					"codex_cli_only_engine_fingerprint_signals": "[{\"type\":\"header_prefix\",\"match\":[\"x-codex-\"],\"required\":true},{\"type\":\"header_exact\",\"match\":[\"session-id\",\"session_id\"],\"required\":false},{\"type\":\"header_exact\",\"match\":[\"thread-id\",\"thread_id\"],\"required\":false},{\"type\":\"body_path\",\"match\":[\"client_metadata.x-codex-window-id\",\"client_metadata.x-codex-installation-id\"],\"required\":false}]",
 					"allow_ungrouped_key_scheduling": false,
@@ -1231,6 +1241,16 @@ func TestAPIContracts(t *testing.T) {
 					"codex_cli_only_blacklist": "",
 					"codex_cli_only_whitelist": "",
 					"compact_home_enabled": false,
+					"home_style": {
+						"accent_from": "#6366F1",
+						"accent_to": "#06B6D4",
+						"hero_title": "",
+						"hero_desc": "",
+						"show_providers": true,
+						"show_pain_points": true,
+						"show_comparison": true,
+						"show_terminal": true
+					},
 					"codex_cli_only_allow_app_server_clients": false,
 					"codex_cli_only_engine_fingerprint_signals": "[{\"type\":\"header_prefix\",\"match\":[\"x-codex-\"],\"required\":true},{\"type\":\"header_exact\",\"match\":[\"session-id\",\"session_id\"],\"required\":false},{\"type\":\"header_exact\",\"match\":[\"thread-id\",\"thread_id\"],\"required\":false},{\"type\":\"body_path\",\"match\":[\"client_metadata.x-codex-window-id\",\"client_metadata.x-codex-installation-id\"],\"required\":false}]",
 					"web_search_emulation_enabled": false,

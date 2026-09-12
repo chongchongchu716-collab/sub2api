@@ -14,6 +14,12 @@ export default {
     login: '登录',
     getStarted: '立即开始',
     goToDashboard: '进入控制台',
+    heroBadge: '面向开发者的 AI 网关',
+    nav: {
+      features: '核心能力',
+      providers: '支持模型',
+      comparison: '方案对比'
+    },
     // 新增：面向用户的价值主张
     heroSubtitle: '一个密钥，畅用多个 AI 模型',
     heroDescription: '无需管理多个订阅账号，一站式接入 Claude、GPT、Gemini 等主流 AI 服务',
@@ -60,6 +66,7 @@ export default {
     // 优势对比
     comparison: {
       title: '为什么选择我们？',
+      badge: '推荐',
       headers: {
         feature: '对比项',
         official: '官方订阅',
@@ -99,7 +106,13 @@ export default {
       supported: '已支持',
       soon: '即将推出',
       claude: 'Claude',
+      openai: 'OpenAI GPT',
       gemini: 'Gemini',
+      deepseek: 'DeepSeek',
+      qwen: '通义千问',
+      grok: 'xAI Grok',
+      kimi: 'Kimi',
+      zhipu: '智谱 GLM',
       antigravity: 'Antigravity',
       more: '更多'
     },

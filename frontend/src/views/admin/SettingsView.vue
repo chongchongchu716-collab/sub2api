@@ -6598,6 +6598,111 @@
                 <Toggle v-model="form.compact_home_enabled" data-testid="compact-home-toggle" />
               </div>
 
+              <!-- Home Style (built-in landing page appearance) -->
+              <div class="space-y-4 border-t border-gray-100 pt-4 dark:border-dark-700">
+                <div>
+                  <label class="font-medium text-gray-900 dark:text-white">{{
+                    t("admin.settings.site.homeStyle.title")
+                  }}</label>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">
+                    {{ t("admin.settings.site.homeStyle.hint") }}
+                  </p>
+                </div>
+
+                <!-- Brand accent -->
+                <div class="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <label class="mb-1.5 block text-sm text-gray-600 dark:text-gray-400">
+                      {{ t("admin.settings.site.homeStyle.accentFrom") }}
+                    </label>
+                    <div class="flex items-center gap-2">
+                      <input
+                        v-model="form.home_style.accent_from"
+                        type="color"
+                        class="h-10 w-12 shrink-0 cursor-pointer rounded-lg border border-gray-300 bg-transparent p-1 dark:border-dark-600"
+                        :aria-label="t('admin.settings.site.homeStyle.accentFrom')"
+                      />
+                      <input
+                        v-model="form.home_style.accent_from"
+                        type="text"
+                        maxlength="7"
+                        class="input font-mono text-sm"
+                        placeholder="#6366F1"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label class="mb-1.5 block text-sm text-gray-600 dark:text-gray-400">
+                      {{ t("admin.settings.site.homeStyle.accentTo") }}
+                    </label>
+                    <div class="flex items-center gap-2">
+                      <input
+                        v-model="form.home_style.accent_to"
+                        type="color"
+                        class="h-10 w-12 shrink-0 cursor-pointer rounded-lg border border-gray-300 bg-transparent p-1 dark:border-dark-600"
+                        :aria-label="t('admin.settings.site.homeStyle.accentTo')"
+                      />
+                      <input
+                        v-model="form.home_style.accent_to"
+                        type="text"
+                        maxlength="7"
+                        class="input font-mono text-sm"
+                        placeholder="#06B6D4"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Live preview -->
+                <div class="flex items-center gap-3">
+                  <span class="text-xs text-gray-500 dark:text-gray-400">
+                    {{ t("admin.settings.site.homeStyle.preview") }}
+                  </span>
+                  <span
+                    class="h-6 w-40 rounded-full shadow-sm"
+                    :style="{ backgroundImage: homeAccentPreview }"
+                  ></span>
+                </div>
+
+                <!-- Hero copy overrides -->
+                <div>
+                  <label class="mb-1.5 block text-sm text-gray-600 dark:text-gray-400">
+                    {{ t("admin.settings.site.homeStyle.heroTitle") }}
+                  </label>
+                  <input
+                    v-model="form.home_style.hero_title"
+                    type="text"
+                    maxlength="200"
+                    class="input text-sm"
+                    :placeholder="t('admin.settings.site.homeStyle.heroPlaceholder')"
+                  />
+                </div>
+                <div>
+                  <label class="mb-1.5 block text-sm text-gray-600 dark:text-gray-400">
+                    {{ t("admin.settings.site.homeStyle.heroDesc") }}
+                  </label>
+                  <input
+                    v-model="form.home_style.hero_desc"
+                    type="text"
+                    maxlength="200"
+                    class="input text-sm"
+                    :placeholder="t('admin.settings.site.homeStyle.heroPlaceholder')"
+                  />
+                </div>
+
+                <!-- Section visibility -->
+                <div
+                  v-for="section in homeSectionToggles"
+                  :key="section.key"
+                  class="flex items-center justify-between gap-4"
+                >
+                  <span class="text-sm text-gray-700 dark:text-gray-300">
+                    {{ t(section.labelKey) }}
+                  </span>
+                  <Toggle v-model="form.home_style[section.key]" />
+                </div>
+              </div>
+
               <!-- Hide CCS Import Button -->
               <div
                 class="flex items-center justify-between border-t border-gray-100 pt-4 dark:border-dark-700"
@@ -8899,6 +9004,11 @@ import {
   defaultFingerprintSignalRows,
   type FingerprintSignalRow,
 } from "./codexFingerprintSignals";
+import {
+  DEFAULT_HOME_STYLE,
+  isHexColor,
+  normalizeHomeStyle,
+} from "@/constants/homeStyle";
 
 const { t, locale } = useI18n();
 const appStore = useAppStore();
@@ -9628,6 +9738,7 @@ const form = reactive<SettingsForm>({
   doc_url: "",
   home_content: "",
   compact_home_enabled: false,
+  home_style: { ...DEFAULT_HOME_STYLE },
   backend_mode_enabled: false,
   hide_ccs_import_button: false,
   payment_enabled: false,
@@ -9876,6 +9987,53 @@ const form = reactive<SettingsForm>({
   // Allow user view error requests
   allow_user_view_error_requests: false,
 });
+
+// 首页样式：品牌渐变预览 + 取色器回填。非法色值只影响预览，保存时后端会再兜底。
+type HomeStyleToggleKey =
+  | "show_providers"
+  | "show_pain_points"
+  | "show_comparison"
+  | "show_terminal";
+
+// 顺序即后台呈现顺序
+const homeSectionToggles: ReadonlyArray<{
+  key: HomeStyleToggleKey;
+  labelKey: string;
+}> = [
+  {
+    key: "show_providers",
+    labelKey: "admin.settings.site.homeStyle.showProviders",
+  },
+  {
+    key: "show_pain_points",
+    labelKey: "admin.settings.site.homeStyle.showPainPoints",
+  },
+  {
+    key: "show_comparison",
+    labelKey: "admin.settings.site.homeStyle.showComparison",
+  },
+  {
+    key: "show_terminal",
+    labelKey: "admin.settings.site.homeStyle.showTerminal",
+  },
+];
+
+const homeAccentPreview = computed(
+  () =>
+    `linear-gradient(135deg, ${
+      isHexColor(form.home_style.accent_from)
+        ? form.home_style.accent_from
+        : DEFAULT_HOME_STYLE.accent_from
+    }, ${
+      isHexColor(form.home_style.accent_to)
+        ? form.home_style.accent_to
+        : DEFAULT_HOME_STYLE.accent_to
+    })`
+);
+
+function applyHomeStyle(payload: unknown): void {
+  form.home_style = normalizeHomeStyle(payload as never);
+}
 
 // 人机验证 UI 状态：单卡片「总开关 + 服务商单选」，落库仍是三个独立
 // enabled 键（与上游一致），由下面的映射保证同一时间至多一家启用。
@@ -10841,6 +10999,7 @@ async function loadSettings() {
       }
     }
     syncCaptchaProviderSelection();
+    applyHomeStyle(settings.home_style);
     if (!form.claude_oauth_system_prompt_blocks?.trim()) {
       form.claude_oauth_system_prompt_blocks =
         defaultClaudeOAuthSystemPromptBlocks;
@@ -11285,6 +11444,7 @@ async function saveSettings() {
       doc_url: form.doc_url,
       home_content: form.home_content,
       compact_home_enabled: form.compact_home_enabled,
+      home_style: { ...form.home_style },
       backend_mode_enabled: form.backend_mode_enabled,
       hide_ccs_import_button: form.hide_ccs_import_button,
       table_default_page_size: form.table_default_page_size,

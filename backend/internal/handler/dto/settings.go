@@ -2,10 +2,96 @@ package dto
 
 import (
 	"encoding/json"
+	"regexp"
 	"strings"
 
 	"github.com/Wei-Shaw/sub2api/internal/service"
 )
+
+// HomeStyle carries the admin-configurable homepage appearance options. It is
+// persisted as a single JSON object under the home_style setting so that adding
+// one more option does not require another settings key.
+type HomeStyle struct {
+	// AccentFrom / AccentTo are the two ends of the brand gradient used by the
+	// built-in homepage. Stored as #RRGGBB.
+	AccentFrom string `json:"accent_from"`
+	AccentTo   string `json:"accent_to"`
+	// HeroTitle / HeroDesc override the built-in (localized) hero copy when set.
+	HeroTitle string `json:"hero_title"`
+	HeroDesc  string `json:"hero_desc"`
+	// Section visibility switches for the built-in landing page.
+	ShowProviders  bool `json:"show_providers"`
+	ShowPainPoints bool `json:"show_pain_points"`
+	ShowComparison bool `json:"show_comparison"`
+	ShowTerminal   bool `json:"show_terminal"`
+}
+
+const (
+	// DefaultHomeAccentFrom / DefaultHomeAccentTo keep the shipped homepage
+	// appearance when an admin never touches the style options.
+	DefaultHomeAccentFrom = "#6366F1"
+	DefaultHomeAccentTo   = "#06B6D4"
+
+	maxHomeStyleTextLen = 200
+)
+
+var hexColorPattern = regexp.MustCompile(`^#[0-9a-fA-F]{6}$`)
+
+func defaultHomeStyle() HomeStyle {
+	return HomeStyle{
+		AccentFrom:     DefaultHomeAccentFrom,
+		AccentTo:       DefaultHomeAccentTo,
+		ShowProviders:  true,
+		ShowPainPoints: true,
+		ShowComparison: true,
+		ShowTerminal:   true,
+	}
+}
+
+// ParseHomeStyle decodes the stored home_style JSON on top of the defaults, so a
+// missing, empty or malformed value degrades to the built-in appearance instead
+// of an all-zero struct (which would silently hide every homepage section).
+func ParseHomeStyle(raw string) HomeStyle {
+	if strings.TrimSpace(raw) == "" {
+		return defaultHomeStyle()
+	}
+	style := defaultHomeStyle()
+	if err := json.Unmarshal([]byte(raw), &style); err != nil {
+		return defaultHomeStyle()
+	}
+	style.AccentFrom = normalizeHomeStyleHex(style.AccentFrom, DefaultHomeAccentFrom)
+	style.AccentTo = normalizeHomeStyleHex(style.AccentTo, DefaultHomeAccentTo)
+	style.HeroTitle = clampHomeStyleText(style.HeroTitle)
+	style.HeroDesc = clampHomeStyleText(style.HeroDesc)
+	return style
+}
+
+// NormalizeHomeStyleRaw validates and canonicalizes a home_style payload for
+// storage. Invalid colors fall back to the defaults and out-of-range copy is
+// truncated, so a malformed blob can never reach the settings table.
+func NormalizeHomeStyleRaw(raw string) string {
+	encoded, err := json.Marshal(ParseHomeStyle(raw))
+	if err != nil {
+		return "{}"
+	}
+	return string(encoded)
+}
+
+func normalizeHomeStyleHex(value, fallback string) string {
+	trimmed := strings.TrimSpace(value)
+	if !hexColorPattern.MatchString(trimmed) {
+		return fallback
+	}
+	return strings.ToUpper(trimmed)
+}
+
+func clampHomeStyleText(value string) string {
+	trimmed := strings.TrimSpace(value)
+	if runes := []rune(trimmed); len(runes) > maxHomeStyleTextLen {
+		return string(runes[:maxHomeStyleTextLen])
+	}
+	return trimmed
+}
 
 // CustomMenuItem represents a user-configured custom menu entry.
 type CustomMenuItem struct {
@@ -164,6 +250,7 @@ type SystemSettings struct {
 	TablePageSizeOptions        []int            `json:"table_page_size_options"`
 	CustomMenuItems             []CustomMenuItem `json:"custom_menu_items"`
 	CustomEndpoints             []CustomEndpoint `json:"custom_endpoints"`
+	HomeStyle                   HomeStyle        `json:"home_style"`
 
 	DefaultConcurrency           int                          `json:"default_concurrency"`
 	DefaultBalance               float64                      `json:"default_balance"`
@@ -396,6 +483,7 @@ type PublicSettings struct {
 	TablePageSizeOptions                []int                    `json:"table_page_size_options"`
 	CustomMenuItems                     []CustomMenuItem         `json:"custom_menu_items"`
 	CustomEndpoints                     []CustomEndpoint         `json:"custom_endpoints"`
+	HomeStyle                           HomeStyle                `json:"home_style"`
 	DingTalkOAuthEnabled                bool                     `json:"dingtalk_oauth_enabled"`
 	LinuxDoOAuthEnabled                 bool                     `json:"linuxdo_oauth_enabled"`
 	WeChatOAuthEnabled                  bool                     `json:"wechat_oauth_enabled"`

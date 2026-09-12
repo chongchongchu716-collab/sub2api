@@ -101,6 +101,31 @@ func TestSettingService_GetPublicSettings_ExposesCompactHomeEnabled(t *testing.T
 	require.False(t, missingSettings.CompactHomeEnabled)
 }
 
+func TestSettingService_GetPublicSettings_ExposesHomeStyle(t *testing.T) {
+	stored := `{"accent_from":"#112233","accent_to":"#445566","hero_title":"Hi","hero_desc":"There","show_providers":false,"show_pain_points":true,"show_comparison":false,"show_terminal":true}`
+	repo := &settingPublicRepoStub{
+		values: map[string]string{SettingKeyHomeStyle: stored},
+	}
+
+	settings, err := NewSettingService(repo, &config.Config{}).GetPublicSettings(context.Background())
+
+	require.NoError(t, err)
+	require.JSONEq(t, stored, settings.HomeStyle)
+
+	// An install that never saved the setting must still get a valid JSON object,
+	// otherwise the SSR injection would serialize an empty json.RawMessage.
+	missing, err := NewSettingService(&settingPublicRepoStub{values: map[string]string{}}, &config.Config{}).
+		GetPublicSettings(context.Background())
+	require.NoError(t, err)
+	require.Equal(t, "{}", missing.HomeStyle)
+
+	corrupted, err := NewSettingService(&settingPublicRepoStub{values: map[string]string{
+		SettingKeyHomeStyle: "not json",
+	}}, &config.Config{}).GetPublicSettings(context.Background())
+	require.NoError(t, err)
+	require.Equal(t, "{}", corrupted.HomeStyle)
+}
+
 func TestSettingService_ChannelMonitorHideThroughputDefaultsToPrivate(t *testing.T) {
 	missing := NewSettingService(&settingPublicRepoStub{values: map[string]string{}}, &config.Config{}).GetChannelMonitorRuntime(context.Background())
 	require.True(t, missing.HideThroughput)

@@ -1346,6 +1346,13 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 		customMenuJSON = string(menuBytes)
 	}
 
+	// 首页样式：整对象设置。缺失字段按默认值补齐，避免部分对象把所有区块关掉。
+	// 未发送该字段时沿用已存储的值（null 视为重置为默认样式）。
+	homeStyleJSON := previousSettings.HomeStyle
+	if raw, sent := sentFields["home_style"]; sent {
+		homeStyleJSON = dto.NormalizeHomeStyleRaw(string(raw))
+	}
+
 	// 自定义端点验证
 	const (
 		maxCustomEndpoints        = 10
@@ -1632,6 +1639,7 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 		TablePageSizeOptions:                   req.TablePageSizeOptions,
 		CustomMenuItems:                        customMenuJSON,
 		CustomEndpoints:                        customEndpointsJSON,
+		HomeStyle:                              homeStyleJSON,
 		DefaultConcurrency:                     req.DefaultConcurrency,
 		DefaultBalance:                         req.DefaultBalance,
 		AffiliateRebateRate:                    affiliateRebateRate,

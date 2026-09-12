@@ -195,6 +195,7 @@ func (s *SettingService) GetPublicSettings(ctx context.Context) (*PublicSettings
 		SettingKeyTablePageSizeOptions,
 		SettingKeyCustomMenuItems,
 		SettingKeyCustomEndpoints,
+		SettingKeyHomeStyle,
 		SettingKeyLinuxDoConnectEnabled,
 		SettingKeyDingTalkConnectEnabled,
 		SettingKeyWeChatConnectEnabled,
@@ -339,6 +340,7 @@ func (s *SettingService) GetPublicSettings(ctx context.Context) (*PublicSettings
 		TablePageSizeOptions:                tablePageSizeOptions,
 		CustomMenuItems:                     settings[SettingKeyCustomMenuItems],
 		CustomEndpoints:                     settings[SettingKeyCustomEndpoints],
+		HomeStyle:                           normalizeHomeStyleRaw(settings[SettingKeyHomeStyle]),
 		LinuxDoOAuthEnabled:                 linuxDoEnabled,
 		DingTalkOAuthEnabled:                dingTalkEnabled,
 		WeChatOAuthEnabled:                  weChatEnabled,
@@ -598,6 +600,7 @@ type PublicSettingsInjectionPayload struct {
 	TablePageSizeOptions                []int                    `json:"table_page_size_options"`
 	CustomMenuItems                     json.RawMessage          `json:"custom_menu_items"`
 	CustomEndpoints                     json.RawMessage          `json:"custom_endpoints"`
+	HomeStyle                           json.RawMessage          `json:"home_style"`
 	LinuxDoOAuthEnabled                 bool                     `json:"linuxdo_oauth_enabled"`
 	DingTalkOAuthEnabled                bool                     `json:"dingtalk_oauth_enabled"`
 	WeChatOAuthEnabled                  bool                     `json:"wechat_oauth_enabled"`
@@ -692,6 +695,7 @@ func (s *SettingService) GetPublicSettingsForInjection(ctx context.Context) (any
 		TablePageSizeOptions:                settings.TablePageSizeOptions,
 		CustomMenuItems:                     filterUserVisibleMenuItems(settings.CustomMenuItems),
 		CustomEndpoints:                     safeRawJSONArray(settings.CustomEndpoints),
+		HomeStyle:                           json.RawMessage(normalizeHomeStyleRaw(settings.HomeStyle)),
 		LinuxDoOAuthEnabled:                 settings.LinuxDoOAuthEnabled,
 		DingTalkOAuthEnabled:                settings.DingTalkOAuthEnabled,
 		WeChatOAuthEnabled:                  settings.WeChatOAuthEnabled,
@@ -776,6 +780,17 @@ func safeRawJSONArray(raw string) json.RawMessage {
 		return json.RawMessage(raw)
 	}
 	return json.RawMessage("[]")
+}
+
+// normalizeHomeStyleRaw keeps home_style a well-formed JSON object. An unwritten
+// or corrupted value degrades to "{}" so the public payload and the SSR
+// injection never carry an empty string (json.RawMessage("") is invalid JSON).
+func normalizeHomeStyleRaw(raw string) string {
+	trimmed := strings.TrimSpace(raw)
+	if !strings.HasPrefix(trimmed, "{") || !json.Valid([]byte(trimmed)) {
+		return "{}"
+	}
+	return trimmed
 }
 
 // GetFrameSrcOrigins returns deduplicated http(s) origins from home_content URL,
